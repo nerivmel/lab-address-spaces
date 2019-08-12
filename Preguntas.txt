@@ -1,0 +1,99 @@
+1.La primera herramienta que analizaremos es una herramienta muy simple, free. Primero, abra una terminal de Linux y teclee man free, lea su manual entero; es breve, no se preocupe! ¿Para qué sirve este comando?. Nota: Puede apoyarse en material web para entender la herramienta mediante ejemplos.
+R/¿Cuánta memoria hay en su sistema? 
+	TOTAL MEM:3780 Megabytes/ SWAP: 4094 Megabytes
+	¿Cuánta está libre?
+	TOTAL MEM Libre: 2OO5 Megabytes/ SWAP LIBRE: 4094 Megabytes
+
+
+
+2.Ahora, ejecute free usando algunos argumentos que podrían ser útiles (por ejemplo, -m, para mostrar la cantidad total de memoria en megabytes). ¿Cuánta memoria hay en su sistema?, ¿Cuánta está libre? ¿Son estos valores los que usted esperaba?
+R/¿Cuánta memoria hay en su sistema? 
+	TOTAL MEM:3780 Megabytes/ SWAP: 4094 Megabytes
+	¿Cuánta está libre?
+	TOTAL MEM Libre: 2OO5 Megabytes/ SWAP LIBRE: 4094 Megabytes
+	¿Son estos valores los que usted esperaba?
+	Son valores mas grandes de los esperados
+
+
+3.A continuación, cree un pequeño programa que use cierta cantidad de memoria, llamado memory-user.c. Este programa debe tomar un argumento por linea de comandos: el número de megabytes de memoria que usted usará. Cuando lo ejecute, el programa debe separar memoria para un arreglo (vector) y recorrer el arreglo, accediendo consecutivamente a cada entrada (por ejemplo, escribiendo un valor inicial a cada posición). El programa deberá hacer esto indefinidamente o, por lo menos, por una cierta cantidad de tiempo especificada también por línea de comandos.
+R/ CODIGOS CORRESPONDIENTES EN REPOSITORIO
+
+
+4.Ahora, mientras corra su programa memory-user.c, ejecute la herramienta free (en una terminal diferente, pero en la misma máquina). ¿Cómo cambia el uso total de memoria cuando su programa está corriendo?, ¿Qué pasa cuando se finaliza el programa memory-user (comando kill)?, ¿coinciden los valores con lo que usted esperaba? Intente esto para diferentes cantidades de uso de memoria. ¿Qué pasa cuando usted usa cantidades de memoria realmente grandes?
+R/	¿Cómo cambia el uso total de memoria cuando su programa está corriendo?
+		la memoria libre empieza a disminuir dependiendo de la cantidad de memoria que se 			reserve	en el malloc
+	¿Qué pasa cuando se finaliza el programa memory-user (comando kill)?
+		se reestablece la memoria libre
+	¿coinciden los valores con lo que usted esperaba?
+		esperabamos que a mayor cantidad de memoria reservada una mayor cantidad 			disminuiria en el espacio libre de memoria.
+		
+5.Ahora veremos una herramienta más conocida como pmap. Invierta algo de tiempo para leer el manual de pmap en detalle. ¿Cuál es la diferencia de pmap con free?
+R/¿Cuál es la diferencia de pmap con free?
+	El comando pmap en Linux le permite ver el mapa de memoria de uno o más procesos mientras 		que el free ofrece la vista general del espacio libre en la memoria.
+
+
+6.Para usar pmap, usted tiene que conocer el identificador de proceso (PID) del proceso en el que usted está interesado. Por lo tanto, primero ejecute ps auxw para ver una lista con todos lo procesos; entonces, seleccione alguno de su interés tal como un browser. Usted también puede usar su programa memory-user en este caso (de hecho, usted puede hacer que ese programa llame a getpid() para imprimir su PID para su conveniencia).
+R/ pmap 10592
+10592:   /opt/google/chrome/chrome --type=renderer --field-trial-handle=8828263522618459935,1411253781430032003,131072 --service-pipe-token=1CDF420E055899C14B578E9C8E5ED576 --lang=en-US --enable-crash-reporter=3a7e0ccb-7a0d-497f-8579-b84144d12703, --enable-offline-auto-reload --enable-offline-auto-reload-visible-only --enable-pinch --num-raster-threads=4 --enable-main-frame-before-activation --enable-gpu-async-worker-context --content-image-texture-target=0,0,3553;0,1,3553;0,2,3553;0,3,3553;0,4,3553;0,5,3553;0,6,3
+0000000fdec80000    512K rw---   [ anon ]
+0000001bd40c0000      4K -----   [ anon ]
+0000001bd40c1000    120K rw---   [ anon ]
+0000001bd40df000      8K -----   [ anon ]
+0000001bd40e1000    120K rw---   [ anon ]
+0000001bd40ff000      8K -----   [ anon ]
+0000001bd4101000    120K rw---   [ anon ]
+0000001bd411f000      8K -----   [ anon ]
+0000001bd4121000    120K rw---   [ anon ]
+...
+...
+...
+00007f331f429000     28K r--s- gconv-modules.cache
+00007f331f430000      4K r---- ld-2.23.so
+00007f331f431000      4K rw--- ld-2.23.so
+00007f331f432000      4K rw---   [ anon ]
+00007ffcd4e97000    148K rw---   [ stack ]
+00007ffcd4f85000     12K r----   [ anon ]
+00007ffcd4f88000      8K r-x--   [ anon ]
+ffffffffff600000      4K r-x--   [ anon ]
+ total          1575176K
+
+
+
+
+7.Ahora ejecute pmap en alguno de estos procesos usando varias flags (como -X) para revelar más detalles acerca del proceso. ¿Qué puede ver? ¿Cuántas entidades diferentes conforman un espacio de direcciones moderno, a diferencia de nuestra simple concepción de code/stack/heap?
+
+	R/¿Qué puede ver?
+...
+...
+00007f331f429000      28       0       0 r--s- gconv-modules.cache
+00007f331f429000       0       0       0 r--s- gconv-modules.cache
+00007f331f430000       4       4       4 r---- ld-2.23.so
+00007f331f430000       0       0       0 r---- ld-2.23.so
+00007f331f431000       4       4       4 rw--- ld-2.23.so
+00007f331f431000       0       0       0 rw--- ld-2.23.so
+00007f331f432000       4       4       4 rw---   [ anon ]
+00007f331f432000       0       0       0 rw---   [ anon ]
+00007ffcd4e97000     148     148     148 rw---   [ stack ]
+00007ffcd4e97000       0       0       0 rw---   [ stack ]
+00007ffcd4f85000      12       0       0 r----   [ anon ]
+00007ffcd4f85000       0       0       0 r----   [ anon ]
+00007ffcd4f88000       8       4       0 r-x--   [ anon ]
+00007ffcd4f88000       0       0       0 r-x--   [ anon ]
+ffffffffff600000       4       0       0 r-x--   [ anon ]
+ffffffffff600000       0       0       0 r-x--   [ anon ]
+---------------- ------- ------- ------- 
+total kB         1650712  440108  363336
+
+	R/¿Cuántas entidades diferentes conforman un espacio de direcciones moderno, a diferencia 		de nuestra simple concepción de code/stack/heap?
+	podemos observar direcciones de memoria asigandas al codigo, asignadas al heap(annon) y 	asignadas al stack.
+
+
+
+8.Finalmente, ejecute pmap para su programa memory-user, con diferentes cantidades de memoria usada. ¿Qué puede ver en este caso? ¿La salida de pmap es siempre la que usted espera?
+	R/¿Qué puede ver en este caso?
+	dependiendo de la cantidad reservada en el malloc, se usara mas espacio en el heap (annon)
+	relacion directamente proporcional
+	¿La salida de pmap es siempre la que usted espera?
+	si, esperabamos que el heap se llenara mas dependiendo del espacio reservado con la 		funcion malloc
+
+
